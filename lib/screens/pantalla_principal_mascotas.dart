@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mascotas/providers/mascotas_providerbd.dart';
 import 'package:mascotas/providers/razas_providerbd.dart';
 import 'package:mascotas/widget/custom_add_button.dart';
 import 'package:mascotas/widget/custom_list_widget.dart';
 
 import 'package:provider/provider.dart';
-import '../providers/mascotas_provider.dart';
 import '../models/mascota.dart';
 import 'ingreso_mascota_dialog.dart';
 
@@ -43,7 +43,7 @@ class PantallaPrincipalMascotas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mascotasProvider = Provider.of<MascotasProvider>(context);
+    final mascotasProvider = Provider.of<MascotaProviderBD>(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Gestión de Mascotas')),
@@ -59,7 +59,7 @@ class PantallaPrincipalMascotas extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: CustomListWidget<Mascota>(
-                items: mascotasProvider.mascotas,
+                items: mascotasProvider.mascota,
                 itemBuilder: (mascota) => Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -85,10 +85,10 @@ class PantallaPrincipalMascotas extends StatelessWidget {
                           icon: const Icon(Icons.edit, color: Colors.blue),
                           onPressed: () => _abrirEditar(context, mascota),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => mascotasProvider.eliminarMascota(mascota),
-                        ),
+                        //IconButton(
+                          //icon: const Icon(Icons.delete, color: Colors.red),
+                          //onPressed: () => mascotasProvider.eliminarMascota(mascota),
+                        //),
                       ],
                     ),
                   ],

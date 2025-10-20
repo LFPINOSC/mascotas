@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mascotas/providers/mascotas_providerbd.dart';
+import 'package:mascotas/providers/razas_providerbd.dart';
 import 'package:provider/provider.dart';
 import '../models/mascota.dart';
 import '../models/raza.dart';
-import '../providers/mascotas_provider.dart';
-import '../providers/razas_provider.dart';
 import '../widget/custom_text_field.dart';
 import 'ingreso_raza_dialog.dart';
 
@@ -35,7 +35,7 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
     razaSeleccionada = widget.mascota?.raza;
   }
 
-  Future<void> _agregarNuevaRaza(BuildContext context, RazasProvider razasProvider) async {
+  Future<void> _agregarNuevaRaza(BuildContext context, RazasProviderBD razasProvider) async {
     // Guardamos temporalmente los datos del formulario
     final nombreTemp = nombreCtrl.text;
     final edadTemp = edadCtrl.text;
@@ -60,8 +60,8 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final mascotasProvider = Provider.of<MascotasProvider>(context, listen: false);
-    final razasProvider = Provider.of<RazasProvider>(context, listen: false);
+    final mascotasProvider = Provider.of<MascotaProviderBD>(context, listen: false);
+    final razasProvider = Provider.of<RazasProviderBD>(context, listen: false);
 
     return AlertDialog(
       title: Text(widget.mascota == null ? 'Agregar Mascota' : 'Modificar Mascota'),
@@ -148,17 +148,11 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
                 duenio: duenio,
                 telefono: telefono,
                 raza: razaSeleccionada!,
+                razas: razasProvider.razas,
+
               );
-            } else {
-              mascotasProvider.modificarMascota(
-                widget.mascota!,
-                nombre: nombre,
-                edad: edad,
-                duenio: duenio,
-                telefono: telefono,
-                raza: razaSeleccionada!,
-              );
-            }
+            } 
+            
 
             Navigator.pop(context);
           },
