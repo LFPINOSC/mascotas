@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mascotas/providers/mascotas_provider.dart';
 import 'package:mascotas/providers/razas_provider.dart';
+import 'package:mascotas/providers/razas_providerbd.dart';
 import 'package:mascotas/screens/inicio_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => RazasProvider()),
+        ChangeNotifierProvider(create: (_) => RazasProviderBD()),
         ChangeNotifierProvider(create: (_) => MascotasProvider()),
       ],
       child: const MyApp(),

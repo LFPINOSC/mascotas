@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mascotas/providers/razas_providerbd.dart';
 import 'package:provider/provider.dart';
-import '../providers/razas_provider.dart';
 import '../models/raza.dart';
 
 class IngresoRazaDialog extends StatefulWidget {
@@ -23,7 +23,7 @@ class _IngresoRazaDialogState extends State<IngresoRazaDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final razasProvider = Provider.of<RazasProvider>(context, listen: false);
+    final razasProvider = Provider.of<RazasProviderBD>(context, listen: false);
 
     return AlertDialog(
       title: Text(widget.raza == null ? 'Agregar Raza' : 'Modificar Raza'),
@@ -43,11 +43,11 @@ class _IngresoRazaDialogState extends State<IngresoRazaDialog> {
 
             if (widget.raza == null) {
               // Agregar nueva raza
-              razasProvider.agregarRaza(nombre);
+              razasProvider.agregarRazas(nombre);
             } else {
               // Modificar raza existente
-              widget.raza!.nombre = nombre;
-              razasProvider.actualizar();
+             // widget.raza!.nombre = nombre;
+              //razasProvider.agregarRazas();
             }
             Navigator.pop(context);
           },
