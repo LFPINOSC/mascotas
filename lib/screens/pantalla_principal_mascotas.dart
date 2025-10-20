@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mascotas/providers/razas_providerbd.dart';
 import 'package:mascotas/widget/custom_add_button.dart';
 import 'package:mascotas/widget/custom_list_widget.dart';
 
 import 'package:provider/provider.dart';
 import '../providers/mascotas_provider.dart';
-import '../providers/razas_provider.dart';
 import '../models/mascota.dart';
 import 'ingreso_mascota_dialog.dart';
 
@@ -12,7 +12,7 @@ class PantallaPrincipalMascotas extends StatelessWidget {
   const PantallaPrincipalMascotas({super.key});
 
   void _abrirIngreso(BuildContext context) {
-    final razasProvider = Provider.of<RazasProvider>(context, listen: false);
+    final razasProvider = Provider.of<RazasProviderBD>(context, listen: false);
 
     if (razasProvider.razas.isEmpty) {
       showDialog(
