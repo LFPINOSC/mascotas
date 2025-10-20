@@ -24,6 +24,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final razasProvider=Provider.of<RazasProviderBD>(context,listen:false);
     razasProvider.cargarRazas();
+     final mascotasProvider=Provider.of<MascotaProviderBD>(context,listen:false);
+    mascotasProvider.cargarMascota(razasProvider.razas);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
