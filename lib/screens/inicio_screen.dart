@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mascotas/providers/mascotas_providerbd.dart';
+import 'package:mascotas/providers/razas_providerbd.dart';
 import 'package:mascotas/screens/pantalla_principal_mascotas.dart';
 import 'package:mascotas/screens/pantalla_principal_razas.dart';
+import 'package:provider/provider.dart';
 import '../models/raza.dart';
 import '../models/mascota.dart';
 
@@ -14,7 +17,22 @@ class InicioScreen extends StatefulWidget {
 class _InicioScreenState extends State<InicioScreen> {
   List<Raza> razas = [];
   List<Mascota> mascotas = [];
+  bool _cargando = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _cargarDatos();
+  }
+  Future<void> _cargarDatos() async {
+    final razasProvider = Provider.of<RazasProviderBD>(context, listen: false);
+    await razasProvider.cargarRazas(); 
+    final mascotasProvider = Provider.of<MascotaProviderBD>(context, listen: false);
+    await mascotasProvider.cargarMascota(razasProvider.razas); 
+    setState(() {
+      _cargando = false;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
