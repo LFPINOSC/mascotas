@@ -42,19 +42,19 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
     final duenioTemp = duenioCtrl.text;
     final telefonoTemp = telefonoCtrl.text;
 
-    // Abrimos diálogo para agregar raza
+
     await showDialog(
       context: context,
       builder: (_) => const IngresoRazaDialog(),
     );
 
-    // Restauramos los datos
+   
     nombreCtrl.text = nombreTemp;
     edadCtrl.text = edadTemp;
     duenioCtrl.text = duenioTemp;
     telefonoCtrl.text = telefonoTemp;
 
-    // Refrescamos el estado para que aparezca la nueva raza en el dropdown
+
     setState(() {});
   }
 
