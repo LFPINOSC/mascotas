@@ -31,9 +31,10 @@ class DbHelper {
         CREATE TABLE mascota (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nombre TEXT,
-          edad INTEGER
+          edad INTEGER,
           duenio TEXT,
           telefono TEXT,
+          razaid INTEGER,
           FOREIGN KEY(razaid) REFERENCES raza(id)
         )
       ''');
