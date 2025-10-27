@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:mascotas/models/mascota.dart';
 
 class CustomListWidget<T> extends StatefulWidget {
   final List<T> items;
@@ -24,7 +27,29 @@ class CustomListWidget<T> extends StatefulWidget {
 
 class _CustomListWidgetState<T> extends State<CustomListWidget<T>> {
   String _searchText = '';
-
+  Widget _buildImage(T item) {
+    // Solo si el item es Mascota
+    
+    if (item is Mascota && item.imagen != null && item.imagen!.isNotEmpty) {
+      try {
+        print("Imagen Base64: ${item.imagen?.substring(0, 20)}...");
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.memory(
+            base64Decode(item.imagen!),
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+          ),
+        );
+      } catch (e) {
+        // Si hay un error al decodificar, muestra ícono por defecto
+        return const Icon(Icons.pets, size: 36, color: Colors.teal);
+      }
+    } else {
+      return const Icon(Icons.pets, size: 36, color: Colors.teal);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final filteredItems = widget.items.where((item) {
@@ -68,7 +93,7 @@ class _CustomListWidgetState<T> extends State<CustomListWidget<T>> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Icon(Icons.pets, size: 36, color: Colors.teal),
+                            _buildImage(item),
                             const SizedBox(width: 12),
                             Expanded(child: widget.itemBuilder(item)),
                             if (widget.onEditar != null)

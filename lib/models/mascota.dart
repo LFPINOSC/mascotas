@@ -1,12 +1,13 @@
 import 'raza.dart';
 
 class Mascota {
-  int id;
-  String nombre;
-  int edad;
-  Raza raza;
-  String duenio;
-  String telefono;
+  final int id;
+  final String nombre;
+  final int edad;
+  final Raza raza;
+  final String duenio;
+  final String telefono;
+  final String? imagen;
 
   Mascota({
     required this.id,
@@ -15,5 +16,6 @@ class Mascota {
     required this.raza,
     required this.duenio,
     required this.telefono,
+    this.imagen
   });
 }

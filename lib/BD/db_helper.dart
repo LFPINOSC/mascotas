@@ -34,6 +34,7 @@ class DbHelper {
           edad INTEGER,
           duenio TEXT,
           telefono TEXT,
+          imagen TEXT,  
           razaid INTEGER,
           FOREIGN KEY(razaid) REFERENCES raza(id)
         )
@@ -55,7 +56,8 @@ class DbHelper {
       'edad':mascota.edad,
       'duenio':mascota.duenio,
       'telefono': mascota.telefono,
-      'razaid':mascota.raza.id
+      'razaid':mascota.raza.id,
+      'imagen': mascota.imagen,
     });
   }
   Future<List<Mascota>> obtenerMascotas(List<Raza> razas) async{
@@ -69,7 +71,8 @@ class DbHelper {
         edad: m['edad'], 
         raza: raza, 
         duenio: m['duenio'], 
-        telefono: m['telefono']
+        telefono: m['telefono'],
+        imagen: m['imagen'],
       );
     }).toList();
   }

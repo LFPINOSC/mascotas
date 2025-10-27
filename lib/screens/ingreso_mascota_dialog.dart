@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:mascotas/providers/mascotas_providerbd.dart';
-import 'package:mascotas/providers/razas_providerbd.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/mascota.dart';
 import '../models/raza.dart';
+import '../providers/mascotas_providerbd.dart';
+import '../providers/razas_providerbd.dart';
 import '../widget/custom_text_field.dart';
 import 'ingreso_raza_dialog.dart';
 
@@ -25,37 +29,61 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
   late TextEditingController telefonoCtrl;
   Raza? razaSeleccionada;
 
+  File? _imagenFile;
+  String? _imagenBase64;
+
   @override
   void initState() {
     super.initState();
     nombreCtrl = TextEditingController(text: widget.mascota?.nombre ?? '');
-    edadCtrl = TextEditingController(text: widget.mascota?.edad.toString() ?? '');
+    edadCtrl = TextEditingController(
+        text: widget.mascota?.edad.toString() ?? '');
     duenioCtrl = TextEditingController(text: widget.mascota?.duenio ?? '');
     telefonoCtrl = TextEditingController(text: widget.mascota?.telefono ?? '');
     razaSeleccionada = widget.mascota?.raza;
+
+    if (widget.mascota?.imagen != null) {
+      _imagenBase64 = widget.mascota!.imagen;
+      // Para mostrar en preview si ya tiene imagen
+      _imagenFile = null; // Opcional, solo usamos Base64
+    }
   }
 
-  Future<void> _agregarNuevaRaza(BuildContext context, RazasProviderBD razasProvider) async {
-    // Guardamos temporalmente los datos del formulario
+  Future<void> _agregarNuevaRaza(
+      BuildContext context, RazasProviderBD razasProvider) async {
     final nombreTemp = nombreCtrl.text;
     final edadTemp = edadCtrl.text;
     final duenioTemp = duenioCtrl.text;
     final telefonoTemp = telefonoCtrl.text;
-
 
     await showDialog(
       context: context,
       builder: (_) => const IngresoRazaDialog(),
     );
 
-   
     nombreCtrl.text = nombreTemp;
     edadCtrl.text = edadTemp;
     duenioCtrl.text = duenioTemp;
     telefonoCtrl.text = telefonoTemp;
 
-
     setState(() {});
+  }
+
+  Future<void> _tomarFoto() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _imagenFile = File(pickedFile.path);
+        _imagenBase64 = base64Encode(bytes);
+
+        print("Imagen Base64: ${_imagenBase64!.substring(0, 20)}...");
+      });
+    } else {
+      print("No se seleccionó ninguna imagen");
+    }
   }
 
   @override
@@ -64,7 +92,7 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
     final razasProvider = Provider.of<RazasProviderBD>(context, listen: false);
 
     return AlertDialog(
-      title: Text(widget.mascota == null ? 'Agregar Mascota' : 'Modificar Mascota'),
+      title: Text(widget.mascota == null ? 'Agregar Mascota' : 'Editar Mascota'),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -74,7 +102,8 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
               CustomTextField(
                 controller: nombreCtrl,
                 label: 'Nombre',
-                validator: (value) => (value == null || value.isEmpty) ? 'Ingrese un nombre' : null,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Ingrese un nombre' : null,
               ),
               const SizedBox(height: 8),
               CustomTextField(
@@ -91,14 +120,16 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
               CustomTextField(
                 controller: duenioCtrl,
                 label: 'Dueño',
-                validator: (value) => (value == null || value.isEmpty) ? 'Ingrese el dueño' : null,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Ingrese el dueño' : null,
               ),
               const SizedBox(height: 8),
               CustomTextField(
                 controller: telefonoCtrl,
                 label: 'Teléfono',
                 keyboardType: TextInputType.phone,
-                validator: (value) => (value == null || value.isEmpty) ? 'Ingrese teléfono' : null,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Ingrese teléfono' : null,
               ),
               const SizedBox(height: 8),
               Row(
@@ -108,11 +139,13 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
                       decoration: const InputDecoration(
                         labelText: 'Seleccione Raza',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                       value: razaSeleccionada,
                       items: razasProvider.razas
-                          .map((r) => DropdownMenuItem(value: r, child: Text(r.nombre)))
+                          .map((r) => DropdownMenuItem(
+                              value: r, child: Text(r.nombre)))
                           .toList(),
                       onChanged: (value) => setState(() => razaSeleccionada = value),
                       validator: (value) => value == null ? 'Seleccione una raza' : null,
@@ -126,16 +159,42 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Foto de la mascota:'),
+                  IconButton(
+                    icon: const Icon(Icons.camera_alt, color: Colors.teal),
+                    onPressed: _tomarFoto,
+                  ),
+                ],
+              ),
+              if (_imagenBase64 != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(
+                      base64Decode(_imagenBase64!),
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
         ElevatedButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
-
             final nombre = nombreCtrl.text.trim();
             final edad = int.tryParse(edadCtrl.text.trim()) ?? 0;
             final duenio = duenioCtrl.text.trim();
@@ -149,10 +208,12 @@ class _IngresoMascotaDialogState extends State<IngresoMascotaDialog> {
                 telefono: telefono,
                 raza: razaSeleccionada!,
                 razas: razasProvider.razas,
-
+                imagen: _imagenBase64,
               );
-            } 
-            
+              print("Imagen Base64 guardando la imagen: ${_imagenBase64!.substring(0, 20)}...");
+            } else {
+              // Para editar: puedes agregar un método de actualizar en tu provider
+            }
 
             Navigator.pop(context);
           },
